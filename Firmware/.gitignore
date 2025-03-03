@@ -1,0 +1,6 @@
+.pio
+.vscode
+*VSCodeCounter*
+build/
+components/
+managed_components/

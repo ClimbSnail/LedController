@@ -1,0 +1,9 @@
+.pio
+.vscode
+*VSCodeCounter*
+build/
+components/
+managed_components/
+*LED控制器刷机工具包*
+*模型*
+*实物图*
