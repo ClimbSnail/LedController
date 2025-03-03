@@ -1,0 +1,175 @@
+#ifndef __CONTROLLER_BASE_H
+#define __CONTROLLER_BASE_H
+
+#include <stdint.h>
+#include "stdio.h"
+#include "string.h"
+#include "interface.h"
+
+class SnailManager;
+
+#define DISCONNCT_TEMP 1200 // 未接入时的温度阈值
+#define AlARM_TEMP 600      // 报警温度阈值
+#define MIN_SET_TEMPERATURE 0
+#define MAX_SET_TEMPERATURE 500
+#define MAX_SET_HP_TIME 1800 // 加热台的时间轴最大值
+
+#define MAX_CORE_ID 16 // 发热芯最大编号
+
+#define CONTROLLER_NAME_LEN 24 // 控制器的名字长度
+
+enum ENABLE_STATE : unsigned char
+{
+    ENABLE_STATE_CLOSE = 0, // 关闭
+    ENABLE_STATE_OPEN,      // 开启
+    ENABLE_STATE_NONE
+};
+
+enum CTRL_TYPE : unsigned char
+{
+    CTRL_TYPE_HOTAIR = 0,
+    CTRL_TYPE_HEATPLATFORM,
+    CTRL_TYPE_SOLDER,
+    CTRL_TYPE_OSCILLOSCOPE,
+    CTRL_TYPE_SIGNALGENERATOR,
+    CTRL_TYPE_SPOTWELDER,
+    CTRL_TYPE_PWMCONTROLLER,
+    CTRL_TYPE_ADJUSTABLEPOWER,
+    CTRL_TYPE_UART_INFO,
+    CTRL_TYPE_NETWORKER,
+    CTRL_TYPE_LED,
+    CTRL_TYPE_NONE
+};
+
+// 信息管理动作
+enum INFO_MANAGE_ACTION : unsigned char
+{
+    INFO_MANAGE_ACTION_SOLDER_IDLE = 0,
+    INFO_MANAGE_ACTION_MD_CUR_CORE_PID,
+    INFO_MANAGE_ACTION_MD_CUR_CORE_PID_OK,
+
+    INFO_MANAGE_ACTION_SOLDER_CREATE,
+    INFO_MANAGE_ACTION_SOLDER_CREATE_OK,
+    INFO_MANAGE_ACTION_SOLDER_READ,
+    INFO_MANAGE_ACTION_SOLDER_READ_OK,
+    INFO_MANAGE_ACTION_SOLDER_WRITE,
+    INFO_MANAGE_ACTION_SOLDER_WRITE_OK,
+    INFO_MANAGE_ACTION_SOLDER_DELETE,
+    INFO_MANAGE_ACTION_SOLDER_DELETE_OK,
+
+    INFO_MANAGE_ACTION_HA_IDLE,
+    INFO_MANAGE_ACTION_HA_CREATE,
+    INFO_MANAGE_ACTION_HA_CREATE_OK,
+    INFO_MANAGE_ACTION_HA_READ,
+    INFO_MANAGE_ACTION_HA_READ_OK,
+    INFO_MANAGE_ACTION_HA_WRITE,
+    INFO_MANAGE_ACTION_HA_WRITE_OK,
+    INFO_MANAGE_ACTION_HA_DELETE,
+    INFO_MANAGE_ACTION_HA_DELETE_OK,
+
+    INFO_MANAGE_ACTION_HP_IDLE,
+    INFO_MANAGE_ACTION_HP_CREATE,
+    INFO_MANAGE_ACTION_HP_CREATE_OK,
+    INFO_MANAGE_ACTION_HP_READ,
+    INFO_MANAGE_ACTION_HP_READ_OK,
+    INFO_MANAGE_ACTION_HP_WRITE,
+    INFO_MANAGE_ACTION_HP_WRITE_OK,
+    INFO_MANAGE_ACTION_HP_DELETE,
+    INFO_MANAGE_ACTION_HP_DELETE_OK,
+
+    INFO_MANAGE_ACTION_CURVE_IDLE,
+    INFO_MANAGE_ACTION_CURVE_CREATE,
+    INFO_MANAGE_ACTION_CURVE_CREATE_OK,
+    INFO_MANAGE_ACTION_CURVE_READ,
+    INFO_MANAGE_ACTION_CURVE_READ_OK,
+    INFO_MANAGE_ACTION_CURVE_WRITE,
+    INFO_MANAGE_ACTION_CURVE_WRITE_OK,
+
+    INFO_MANAGE_ACTION_CONFIG_RESET_IDLE,
+    INFO_MANAGE_ACTION_CONFIG_UTIL_RESET,
+    INFO_MANAGE_ACTION_CONFIG_UTIL_RESET_OK,
+    INFO_MANAGE_ACTION_CONFIG_CALIB_RESET,
+    INFO_MANAGE_ACTION_CONFIG_CALIB_RESET_OK,
+    INFO_MANAGE_ACTION_CONFIG_CORE_RESET,
+    INFO_MANAGE_ACTION_CONFIG_CORE_RESET_OK,
+    INFO_MANAGE_ACTION_CONFIG_CURVE_RESET,
+    INFO_MANAGE_ACTION_CONFIG_CURVE_RESET_OK,
+
+    INFO_MANAGE_ACTION_ADJPWR_CALIB_IDLE,
+    INFO_MANAGE_ACTION_ADJPWR_CALIB_START,
+    INFO_MANAGE_ACTION_ADJPWR_CALIB_RUNNING,
+    INFO_MANAGE_ACTION_ADJPWR_CALIB_FINISH,
+
+    INFO_MANAGE_ACTION_MAX
+};
+
+// 控制器序号
+enum CTRL_OBJ_INDEX : unsigned char
+{
+    CTRL_OBJ_INDEX_HOTAIR_0 = 0x0,
+    CTRL_OBJ_INDEX_HOTAIR_1,
+    CTRL_OBJ_INDEX_HP_0,
+    CTRL_OBJ_INDEX_HP_1,
+    CTRL_OBJ_INDEX_SOLDER,
+    CTRL_OBJ_INDEX_OSCILLOSCOPE,
+    CTRL_OBJ_INDEX_SINGAL_GENERATOR,
+    CTRL_OBJ_INDEX_SPOTWELDER,
+    CTRL_OBJ_INDEX_ADJ_POWER,
+    CTRL_OBJ_INDEX_UARTINFO,
+    CTRL_OBJ_INDEX_NETWORKER,
+
+    CTRL_OBJ_INDEX_MAX
+};
+
+// 控制器对象的名字
+#define HOTAIR_CTRL_NAME_0 "HotAir_0"
+#define HOTAIR_CTRL_NAME_1 "HotAir_1"
+#define HP_CTRL_NAME_0 "HeatPlatform_0"
+#define HP_CTRL_NAME_1 "HeatPlatform_1"
+#define SOLDER_CTRL_NAME "Solder"
+#define OSCILLOSCOPE_CTRL_NAME "Oscilloscope"
+#define SINGAL_GENERATOR_CTRL_NAME "SignalGenerator"
+#define SPOTWELDER_CTRL_NAME "SpotWelder"
+#define ADJ_POWER_CTRL_NAME "AdjPower"
+#define UARTINFO_CTRL_NAME "UartInfo"
+#define NETWORKER_CTRL_NAME "Networker"
+#define LED_CTRL_NAME "LedController"
+
+// const char *g_allCtrlName[CTRL_OBJ_INDEX_MAX] = {};
+
+class ControllerBase
+{
+public:
+    char m_name[CONTROLLER_NAME_LEN]; // 控制器名字
+    CTRL_TYPE m_type;                 // 控制器类型
+    // 使能标志位 总开关
+    ENABLE_STATE m_enableFlag; // ENABLE_STATE_CLOSE ENABLE_STATE_OPEN
+    // 软件独立使能开关（可用于用户、UI等权限控制）
+    ENABLE_STATE m_subEnable; // ENABLE_STATE_CLOSE ENABLE_STATE_OPEN
+    bool m_initFlag;          // 初始化标志
+    SnailManager *m_manager;  //
+
+public:
+    ControllerBase(const char *name, CTRL_TYPE type, SnailManager *manager)
+    {
+        memset(m_name, 0, CONTROLLER_NAME_LEN);
+        snprintf(m_name, CONTROLLER_NAME_LEN, "%s", name);
+        m_type = type;
+        m_manager = manager;
+        m_enableFlag = ENABLE_STATE_CLOSE;
+    }
+    // 析构函数
+    virtual ~ControllerBase(){};
+    // 控制器启动初始化 ps:只初始化赋值必要的变量，不进行任何引脚的初始化
+    virtual bool Start() = 0;
+    // 主处理程序
+    virtual bool Process() = 0;
+    // 控制器关闭
+    virtual bool End() = 0;
+    // 消息处理
+    virtual bool MessageHandle(const char *from, const char *to,
+                               CTRL_MESSAGE_TYPE type, void *message,
+                               void *ext_info) = 0;
+};
+
+#endif

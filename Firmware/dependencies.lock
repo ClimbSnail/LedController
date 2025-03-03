@@ -1,0 +1,29 @@
+dependencies:
+  bblanchon/arduinojson:
+    component_hash: 914b05e5ba8d6b99d51307d4f5bf6a5ff610c673c200c3134edcc0a7a99d04b0
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 7.3.1
+  espressif/led_strip:
+    component_hash: 28c6509a727ef74925b372ed404772aeedf11cce10b78c3f69b3c66799095e2d
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.4'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 2.5.5
+  idf:
+    source:
+      type: idf
+    version: 5.2.3
+direct_dependencies:
+- bblanchon/arduinojson
+- espressif/led_strip
+manifest_hash: a84afad0c588b94521ff130a117f8806c4d5b8a3471cc3f27cb04a98da8e1f52
+target: esp32c3
+version: 2.0.0

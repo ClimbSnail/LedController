@@ -1,0 +1,10 @@
+# Name,   Type, SubType, Offset,  Size, Flags
+nvs,      data, nvs,     0x9000,  0x5000,
+otadata,  data, ota,     0xe000,  0x2000,
+app0,     app,  ota_0,   0x10000, 0x160000,
+coredump, data, coredump,   0x170000,  64K,
+backgroud,   data, spiffs,  0x180000,0x50000,
+spiffs,   data, spiffs,  0x1E0000,0x20000,
+wallpaper,   0x50, 0x32,  0x200000,0x200000,
+# 4M->0x200000 8M->0x600000 16M->0xE00000 32M->0x1E00000 64M->0x3E00000 
+# parttool.py --flash_size 8MB generate_partition_table .\partitions-ota_C3.csv

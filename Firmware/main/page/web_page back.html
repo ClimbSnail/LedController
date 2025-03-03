@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Led配置中心</title>
+    <style>
+        #colorCanvas {
+            border: 1px solid #000;
+            cursor: crosshair;
+        }
+
+        body {
+            /* font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            height: 100vh; */
+            align-items: center;
+            background-color: #d3d3d3;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .colorTemp {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 20px auto;
+            background-color: #ffeb99;
+            /* 初始颜色对应 2500K */
+            box-shadow: 0 0 30px rgba(255, 235, 153, 0.5);
+        }
+
+        .slider {
+            /* width: 80%; */
+            width: 200px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>&nbsp;&nbsp;&nbsp;&nbsp;Led配置中心</h1>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;">当前固件版本:</p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;">v1.2.0</p>
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="ssid_1">WiFi_1名称:</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <input type="text" id="ssid_1" value="" title="只能是2.4G的wifi网络">
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="password_1">WiFi_1密码:</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <input type="text" id="password_1" value="" title="最大支持23位密码">
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="ssid_2">WiFi_2名称:</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <input type="text" id="ssid_2" value="" title="只能是2.4G的wifi网络">
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="password_2">WiFi_2密码:</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <input type="text" id="password_2" value="" title="最大支持23位密码">
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="ledPanelType">LED灯板:</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <select id="ledPanelType" name="ledPanelType">
+        <option value="0">单色光+RGB</option>
+        <option value="1">可调色温+UV灯</option>
+    </select>
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="coolTemp">主动散热温度°C:</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;</p>
+    <input type="text" id="coolTemp" maxlength="2" width="50" value="" title="达到该温度后，开启风扇扇热">
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="timeUpdataInterval">时间更新间隔(s):</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;</p>
+    <select id="timeUpdataInterval" name="timeUpdataInterval" value="300000">
+        <option value="300000">5分钟</option>
+        <option value="1800000">30分钟</option>
+        <option value="3600000">1小时</option>
+        <option value="43200000">12小时</option>
+    </select>
+    <br />
+    <br />
+    <!-- <div> -->
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <canvas id="rgbCanvasChoose" width="100" height="100"></canvas>
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="Canvas">自定义RGB：</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <!-- </div>
+    <div> -->
+    <canvas id="rgbCanvas" width="300" height="150"></canvas>
+    <!-- </div> -->
+    <br />
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;"><label for="Canvas">自定义色温：</label></p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <canvas id="colorTempCanvas" width="300" height="20"></canvas>
+    <br />
+    <div class="container">
+        <div class="colorTemp" id="colorTemp"></div>
+        <input type="range" min="2500" max="7500" value="5000" class="slider" id="kelvinSlider">
+        <p>色温: <span id="kelvinValue">5000</span>K</p>
+    </div>
+    <br />
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <button id="save_config" type="button" onclick="readConfig()">重新读取</button>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <button id="save_config" type="button" onclick="saveConfig()">保存配置</button>
+
+    <script>
+        const canvas = document.getElementById('rgbCanvas');
+        const ctx = canvas.getContext('2d');
+        const rgbCanvasChoose = document.getElementById('rgbCanvasChoose');
+
+        // 生成调色盘
+        for (let x = 0; x < canvas.width; x++) {
+            for (let y = 0; y < canvas.height; y++) {
+                ctx.fillStyle = `hsl(${(360 * x) / canvas.width}, 100%, ${100 - (100 * y) / canvas.height}%)`;
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const pixel = ctx.getImageData(x, y, 1, 1).data;
+            const color = `rgba(${pixel[0]}, ${pixel[1]}, ${pixel[2]}, ${pixel[3]})`;
+            // document.body.style.backgroundColor = color;
+            rgbCanvasChoose.style.backgroundColor = color;
+        });
+    </script>
+
+    <script>
+        const colorTemp = document.getElementById('colorTemp');
+        const kelvinSlider = document.getElementById('kelvinSlider');
+        const kelvinValue = document.getElementById('kelvinValue');
+
+        // const rgb = 
+
+        // 色温转RGB算法（基于简化公式）
+        function kelvinToRGB(temp) {
+            temp = temp / 100; // 转换为百位值（如 2500K -> 25）
+            let red, green, blue;
+
+            // 暖色调（2500K ~ 6600K）
+            if (temp <= 66) {
+                red = 255;
+                green = temp;
+                green = 99.4708 * Math.log(green) - 161.1196;
+                if (temp <= 19) {
+                    blue = 0;
+                } else {
+                    blue = temp - 10;
+                    blue = 138.5177 * Math.log(blue) - 305.0448;
+                }
+            }
+            // 冷色调（6600K ~ 7500K）
+            else {
+                red = temp - 60;
+                red = 329.6987 * Math.pow(red, -0.1332);
+                green = temp - 60;
+                green = 288.1222 * Math.pow(green, -0.0755);
+                blue = 255;
+            }
+
+            // 限制RGB范围在0-255之间
+            const clamp = (value) => Math.min(255, Math.max(0, value));
+            return {
+                r: Math.round(clamp(red)),
+                g: Math.round(clamp(green)),
+                b: Math.round(clamp(blue))
+            };
+        }
+
+        // 更新灯光颜色
+        function updateLight() {
+            const kelvin = kelvinSlider.value;
+            kelvinValue.textContent = kelvin;
+            const rgb = kelvinToRGB(kelvin);
+            const color = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            colorTemp.style.backgroundColor = color;
+            colorTemp.style.boxShadow = `0 0 30px ${color}`;
+            saveConfig();
+        }
+
+        // setInterval(function () {
+        //     document.getElementById("kelvinSlider").value
+        //     saveConfig();
+        // }, 500); // 500毫秒
+
+        // 监听滑块变化
+        kelvinSlider.addEventListener('input', updateLight);
+        updateLight(); // 初始化
+    </script>
+</body>
+
+</html>
+<script type="text/javascript">
+
+    //服务器地址
+    //烧录进ESP32时使用 "ws://"+window.location.host+"/ws" 
+    //调试html时直接写 "ws://192.168.31.117/ws"
+    const ws_client = new WebSocket("ws://" + window.location.host + "/ws");
+
+    /*ws_client连接成功事件*/
+    ws_client.onopen = function (event) {
+        readConfig();
+    };
+    /*ws_client错误事件*/
+    ws_client.onerror = function (error) {
+
+    };
+
+    /*ws_client接收数据*/
+    ws_client.onmessage = function (event) {
+        data_processing(event.data);  //获取数据交给别的函数处理
+    };
+
+    function readConfig() {
+        ws_client.send("{\"action\":\"readConfig\"}");
+    }
+
+    function saveConfig() {
+        var ssid_1 = document.getElementById("ssid_1").value;
+        var password_1 = document.getElementById("password_1").value;
+        var ssid_2 = document.getElementById("ssid_2").value;
+        var password_2 = document.getElementById("password_2").value;
+        // var apiKey = document.getElementById("apiKey").value;
+        var ledPanelType = document.getElementById("ledPanelType").value;
+        var coolTemp = document.getElementById("coolTemp").value;
+        var colorTemperature = document.getElementById("kelvinSlider").value;
+        var timeUpdataInterval = document.getElementById("timeUpdataInterval").value;
+        var config = {
+            "action": "saveConfig",
+            "ssid_1": ssid_1,
+            "password_1": password_1,
+            "ssid_2": ssid_2,
+            "password_2": password_2,
+            // "apiKey": apiKey,
+            "ledPanelType": ledPanelType,
+            "coolTemp": coolTemp,
+            "colorTemperature": colorTemperature,
+            "timeUpdataInterval": timeUpdataInterval
+        };
+        console.log(config);
+        ws_client.send(JSON.stringify(config));
+    }
+
+    /*数据处理*/
+    function data_processing(data) {
+        console.log(data);  //打印在调试框
+        try {
+            var jsonData = JSON.parse(event.data);
+
+            // 步骤3: 处理JSON数据
+            if (jsonData.hasOwnProperty('ssid_1')) {
+                document.getElementById("ssid_1").value = jsonData.ssid_1;
+            }
+            if (jsonData.hasOwnProperty('password_1')) {
+                document.getElementById("password_1").value = jsonData.password_1;
+            }
+            if (jsonData.hasOwnProperty('ssid_2')) {
+                document.getElementById("ssid_2").value = jsonData.ssid_2;
+            }
+            if (jsonData.hasOwnProperty('password_2')) {
+                document.getElementById("password_2").value = jsonData.password_2;
+            }
+            // if (jsonData.hasOwnProperty('apiKey')) {
+            //     document.getElementById("apiKey").value = jsonData.apiKey;
+            // }
+            if (jsonData.hasOwnProperty('ledPanelType')) {
+                document.getElementById("ledPanelType").value = jsonData.ledPanelType;
+            }
+            if (jsonData.hasOwnProperty('coolTemp')) {
+                document.getElementById("coolTemp").value = jsonData.coolTemp;
+            }
+            if (jsonData.hasOwnProperty('colorTemperature')) {
+                document.getElementById("kelvinSlider").value = jsonData.colorTemperature;
+                document.getElementById('kelvinSlider').min = jsonData.colorTempLow;
+                document.getElementById('kelvinSlider').max = jsonData.colorTempHigh;
+            }
+            if (jsonData.hasOwnProperty('timeUpdataInterval')) {
+                document.getElementById("timeUpdataInterval").value = jsonData.timeUpdataInterval;
+            }
+
+        } catch (e) {
+            console.error("Error parsing JSON:", e);
+        }
+        // ws_client.send(data);   //发给服务器
+    }
+
+
+</script>
