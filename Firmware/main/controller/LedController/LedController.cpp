@@ -95,13 +95,13 @@ bool LedController::Open()
     break;
     case LED_MODE_RGB:
     {
-        m_utilConfigCache.rgbRed = (m_utilConfigCache.colorRgb >> 16) / 255.0 * m_utilConfigCache.rgbBrightness;
-        m_utilConfigCache.rgbGreen = (m_utilConfigCache.colorRgb & 0x0000FF00 >> 8) / 255.0 * m_utilConfigCache.rgbBrightness;
-        m_utilConfigCache.rgbBlue = (m_utilConfigCache.colorRgb & 0x000000FF) / 255.0 * m_utilConfigCache.rgbBrightness;
+        double rgbRed = (m_utilConfigCache.colorRgb >> 16) / 256.0 * m_utilConfigCache.rgbBrightness;
+        double rgbGreen = (m_utilConfigCache.colorRgb & 0x0000FF00 >> 8) / 256.0 * m_utilConfigCache.rgbBrightness;
+        double rgbBlue = (m_utilConfigCache.colorRgb & 0x000000FF) / 256.0 * m_utilConfigCache.rgbBrightness;
 
-        double rgbRed = (m_utilConfigCache.colorRgb >> 16) / 255.0 * m_utilConfigCache.rgbBrightness;
-        double rgbGreen = (m_utilConfigCache.colorRgb & 0x0000FF00 >> 8) / 255.0 * m_utilConfigCache.rgbBrightness;
-        double rgbBlue = (m_utilConfigCache.colorRgb & 0x000000FF) / 255.0 * m_utilConfigCache.rgbBrightness;
+        m_utilConfigCache.rgbRed = rgbRed;
+        m_utilConfigCache.rgbGreen = rgbGreen;
+        m_utilConfigCache.rgbBlue = rgbBlue;
 
         SH_LOG("rgbRed = %lf\n", rgbRed);
         SH_LOG("rgbGreen = %lf\n", rgbGreen);
@@ -445,7 +445,7 @@ bool LedController::Operate(KNOBS_STATE knobsState, int16_t knobsValue)
     {
         if (KNOBS_STATE_IDLE != knobsState || 0 != knobsValue)
         {
-            m_enableFlag = ENABLE_STATE_CLOSE;
+            m_enableFlag = ENABLE_STATE_OPEN;
             this->Application();
             return true;
         }

@@ -2,7 +2,7 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
-set(LEDC_SW_VER "1.3.0")
+set(LEDC_SW_VER "1.3.1")
 
 add_definitions(
     -DLEDC_HW_VERSION=0
