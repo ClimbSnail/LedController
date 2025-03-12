@@ -32,7 +32,7 @@ Max HTTP Request Header Length 修改为 2048
 */
 
 #ifndef LEDC_SW_VERSION
-#define LEDC_SW_VERSION "1.3.0"
+#define LEDC_SW_VERSION "1.3.2"
 #endif
 
 #ifdef TEST_VER // 测试标识
@@ -53,10 +53,10 @@ Max HTTP Request Header Length 修改为 2048
 
 #define SNAIL_MQTT_URI "mqtt://climbsnail.cn"
 #define SNAIL_MQTT_PORT 1883
-#define SNAIL_MQTT_USERNAME "admin"
-#define SNAIL_MQTT_PASSWD "A773181861a"
+#define SNAIL_MQTT_USERNAME "ClimbSnail"
+#define SNAIL_MQTT_PASSWD "ClimbSnail.v0"
 
-#define SNAIL_MQTT_DEVIVCE_ID_SIZE 20
+#define SNAIL_MQTT_DEVIVCE_ID_SIZE 24
 #define SNAIL_MQTT_TOPIC_HEAD_SIZE 24
 #define SNAIL_MQTT_LAST_WILL_TOP_SIZE (SNAIL_MQTT_TOPIC_HEAD_SIZE + 4)
 #define SNAIL_MQTT_NORMAL_TOPIC_MAX_SIZE 48

@@ -36,7 +36,7 @@ QueueHandle_t mqttMsgQue;
 
 static const char *TAG = "mqtt_example";
 static bool g_mqtt_connected = false;
-static char g_device_id[SNAIL_MQTT_DEVIVCE_ID_SIZE] = {0};                   // LED控制器的机器码
+static char g_client_id[SNAIL_MQTT_DEVIVCE_ID_SIZE] = {0};                   // LED控制器的机器码
 static char g_top_head[SNAIL_MQTT_TOPIC_HEAD_SIZE] = {0};                    // 消息头 目前刚好23字节
 static char g_last_will_top[SNAIL_MQTT_LAST_WILL_TOP_SIZE] = {0};            // 异常断线后发布的消息
 static char g_snail_subscribe_topic[SNAIL_MQTT_NORMAL_TOPIC_MAX_SIZE] = {0}; // 订阅的焊台topic
@@ -174,7 +174,7 @@ void mqttStart(const char *device_id,      // LED控制器的机器码
                const char *snail_device_id // 要联动的焊台机器码
 )
 {
-    strncpy(g_device_id, device_id, SNAIL_MQTT_DEVIVCE_ID_SIZE);
+    snprintf(g_client_id, SNAIL_MQTT_DEVIVCE_ID_SIZE, "Led_%s", device_id);
     snprintf(g_top_head, SNAIL_MQTT_TOPIC_HEAD_SIZE, "/led/%s", device_id);
     snprintf(g_last_will_top, SNAIL_MQTT_LAST_WILL_TOP_SIZE, "%s%s",
              g_top_head, SNAIL_MQTT_TOPIC_SYS);
@@ -185,7 +185,7 @@ void mqttStart(const char *device_id,      // LED控制器的机器码
     mqtt_cfg.broker.address.uri = SNAIL_MQTT_URI,
     mqtt_cfg.broker.address.port = SNAIL_MQTT_PORT,
     mqtt_cfg.credentials.username = SNAIL_MQTT_USERNAME;
-    mqtt_cfg.credentials.client_id = g_device_id;
+    mqtt_cfg.credentials.client_id = g_client_id;
     mqtt_cfg.credentials.authentication.password = SNAIL_MQTT_PASSWD;
     mqtt_cfg.session.keepalive = 120;
     mqtt_cfg.session.last_will.topic = g_last_will_top;

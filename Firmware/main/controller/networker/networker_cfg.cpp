@@ -5,7 +5,7 @@
 #include "string.h"
 
 // 持久化配置
-#define NETWORKER_CONFIG_PATH (ROOT_DIR "/networker_v13_0.cfg")
+#define NETWORKER_CONFIG_PATH (ROOT_DIR "/networker_v13_2.cfg")
 #define NETWORKER_WEATHER_CONFIG_PATH (ROOT_DIR "/networkerWea_v13_0.cfg")
 
 void Networker::WriteConfig(NetworkerConfig *cfg)
@@ -106,7 +106,7 @@ void Networker::ReadConfig(NetworkerConfig *cfg)
         snprintf(cfg->cityCode, sizeof(cfg->cityCode), "%s", "北京"); // "110000" "北京"
         snprintf(cfg->apiKey, sizeof(cfg->apiKey), "%s", "");
         snprintf(cfg->ignoredVer, sizeof(cfg->ignoredVer), "%s", LED_CONTROLLER_VERSION);
-        snprintf(cfg->snailID, sizeof(cfg->snailID), "%s", "焊台机器码");
+        snprintf(cfg->snailID, sizeof(cfg->snailID), "%s", "填焊台机器码");
 
         cfg->weatherUpdataInterval = 1800000; // 天气更新的时间间隔900000(900s)
         cfg->timeUpdataInterval = 1800000;    // 日期时钟更新的时间间隔900000(900s)
