@@ -36,7 +36,7 @@ QueueHandle_t mqttMsgQue;
 
 static const char *TAG = "mqtt_example";
 static bool g_mqtt_connected = false;
-static char g_client_id[SNAIL_MQTT_DEVIVCE_ID_SIZE] = {0};                   // LED控制器的机器码
+static char g_client_id[SNAIL_MQTT_DEVIVCE_ID_SIZE] = {0};                   // LED控制器的ClientID
 static char g_top_head[SNAIL_MQTT_TOPIC_HEAD_SIZE] = {0};                    // 消息头 目前刚好23字节
 static char g_last_will_top[SNAIL_MQTT_LAST_WILL_TOP_SIZE] = {0};            // 异常断线后发布的消息
 static char g_snail_subscribe_topic[SNAIL_MQTT_NORMAL_TOPIC_MAX_SIZE] = {0}; // 订阅的焊台topic

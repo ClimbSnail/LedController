@@ -24,22 +24,26 @@
 #include "lwip/lwip_napt.h"
 #endif
 #include "common.h"
+#include "sh_hal/hal_esp.h"
 
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
+
 // #include "mdns.h"
+// #include "lwip/netif.h"
 
 // #define DEFAULT_SCAN_LIST_SIZE CONFIG_EXAMPLE_SCAN_LIST_SIZE
 #define DEFAULT_SCAN_LIST_SIZE CONFIG_WIFI_PROV_SCAN_MAX_ENTRIES
 
 static const char *TAG = "scan";
 static char ip_str[16] = "192.168.4.1";
-static esp_netif_t *esp_netif_ap;
-static esp_netif_t *esp_netif_sta;
+static esp_netif_t *esp_netif_ap = NULL;
+static esp_netif_t *esp_netif_sta = NULL;
 static int8_t s_connectRssi = WIFI_RSSI_MIN_DISCONNECT; // 已连接的wifi网络信号强度
 wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
+bool s_firstConnSuccFlag = false; // 第一次连接受否成功
 
 char *get_ip_str(void)
 {
@@ -216,7 +220,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
-        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY)
+        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY || true == s_firstConnSuccFlag)
         {
             esp_wifi_connect();
             s_retry_num++;
@@ -260,6 +264,11 @@ void sh_wifi_init(void)
         esp_netif_ap = esp_netif_create_default_wifi_ap();
         esp_netif_sta = esp_netif_create_default_wifi_sta();
 
+        char hostname[32] = {0};
+        snprintf(hostname, 32, "%s_%02X", DEVICE_NAME,
+                 (uint16_t)SH_HAL::getChipID());
+        esp_netif_set_hostname(esp_netif_sta, hostname);
+
         /*Initialize WiFi */
         wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
         ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -274,8 +283,9 @@ bool sh_wifi_init_softap(void)
     wifi_config_t wifi_config = {
         .ap = {},
     };
-    strcpy((char *)wifi_config.ap.ssid, SH_AP_SSID);
-    wifi_config.ap.ssid_len = strlen(SH_AP_SSID);
+    snprintf((char *)wifi_config.ap.ssid, 32, "%s_%02X", SH_AP_SSID,
+             (uint16_t)SH_HAL::getChipID());
+    wifi_config.ap.ssid_len = strlen((char *)wifi_config.ap.ssid);
     wifi_config.ap.channel = 1;
     strcpy((char *)wifi_config.ap.password, SH_PASSWD_SSID);
     wifi_config.ap.max_connection = 3;
@@ -293,7 +303,7 @@ bool sh_wifi_init_softap(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     SH_LOG("sh_wifi_init_softap finished.\nSSID:%s password:%s channel:%d\n",
-           SH_AP_SSID, SH_PASSWD_SSID, wifi_config.ap.channel);
+           wifi_config.ap.ssid, wifi_config.ap.password, wifi_config.ap.channel);
 
     return true;
 }
@@ -416,6 +426,7 @@ bool sh_wifi_init_sta(wifi_mode_t mode,
                    wait_ssid[ind], wait_password[ind]);
             s_connectRssi = wait_rssi[ind];
             connected = true;
+            s_firstConnSuccFlag = true;
             break;
         }
         else if (bits & WIFI_FAIL_BIT)

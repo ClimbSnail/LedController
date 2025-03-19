@@ -21,8 +21,23 @@
             margin: 0;
         }
 
+        p {
+            display: inline;
+        }
+
         .container {
             text-align: center;
+        }
+
+        .item {
+            /* flex-basis: 50px;
+            flex-grow: 1; */
+            /* margin: auto 20px; */
+            /* width: 400px; */
+            /* width: 80%; */
+            text-align: center;
+            /* border: 1px solid #000; */
+            /* align-items: center; */
         }
 
         .colorTemp {
@@ -44,99 +59,105 @@
 </head>
 
 <body>
-    <h1>&nbsp;&nbsp;&nbsp;&nbsp;Led配置中心</h1>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;">当前固件版本:</p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;">v1.2.0</p>
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="ssid_1">WiFi_1名称:</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <input type="text" id="ssid_1" value="" title="只能是2.4G的wifi网络">
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="password_1">WiFi_1密码:</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <input type="text" id="password_1" value="" title="最大支持23位密码">
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="ssid_2">WiFi_2名称:</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <input type="text" id="ssid_2" value="" title="只能是2.4G的wifi网络">
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="password_2">WiFi_2密码:</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <input type="text" id="password_2" value="" title="最大支持23位密码">
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="ledPanelType">LED灯板:</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <select id="ledPanelType" name="ledPanelType">
-        <option value="0">单色光+RGB</option>
-        <option value="1">可调色温+UV灯</option>
-    </select>
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="coolTemp">主动散热温度°C:</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;</p>
-    <input type="text" id="coolTemp" maxlength="2" width="50" value="" title="达到该温度后，开启风扇扇热">
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="timeUpdataInterval">时间更新间隔(s):</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;</p>
-    <select id="timeUpdataInterval" name="timeUpdataInterval" value="300000">
-        <option value="300000">5分钟</option>
-        <option value="1800000">30分钟</option>
-        <option value="3600000">1小时</option>
-        <option value="43200000">12小时</option>
-    </select>
-    <br />
-    <br />
-    <!-- <div> -->
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <canvas id="rgbCanvasChoose" width="100" height="100"></canvas>
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="Canvas">自定义RGB：</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <!-- </div>
-    <div> -->
-    <canvas id="rgbCanvas" width="300" height="150"></canvas>
-    <!-- </div> -->
-    <br />
-    <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;"><label for="Canvas">自定义色温：</label></p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <canvas id="colorTempCanvas" width="300" height="20"></canvas>
-    <br />
-    <div class="container">
-        <div class="colorTemp" id="colorTemp"></div>
-        <input type="range" min="2500" max="7500" value="5000" class="slider" id="kelvinSlider">
-        <p>色温: <span id="kelvinValue">5000</span>K</p>
+    <div class="item">
+        <h1>Led配置中心</h1>
+    </div>
+    <div class="item">
+        <!-- style="text-align: right;" -->
+        <!-- style="float: left;" -->
+        <p>当前固件版本:</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>v1.3.2</p>
     </div>
     <br />
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <button id="save_config" type="button" onclick="readConfig()">重新读取</button>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <p style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-    <button id="save_config" type="button" onclick="saveConfig()">保存配置</button>
+    <div class="item">
+        <p><label for="ssid_1">WiFi_1名称:</label></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <input type="text" id="ssid_1" value="" title="只能是2.4G的wifi网络">
+    </div>
+    <br />
+    <div class="item">
+        <p><label for="password_1">WiFi_1密码:</label></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <input type="text" id="password_1" value="" title="最大支持23位密码">
+    </div>
+    <br />
+    <div class="item">
+        <p><label for="ssid_2">WiFi_2名称:</label></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <input type="text" id="ssid_2" value="" title="只能是2.4G的wifi网络">
+    </div>
+    <br />
+    <div class="item">
+        <p><label for="password_2">WiFi_2密码:</label></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <input type="text" id="password_2" value="" title="最大支持23位密码">
+    </div>
+    <br />
+    <div class="item">
+        <p><label for="snailID">填焊台联动码:</label></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <input type="text" id="snailID" value="" title="填写要联动的焊台机器码">
+    </div>
+    <br />
+    <div class="item">
+        <p><label for="ledPanelType">LED灯板:</label></p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <select id="ledPanelType" name="ledPanelType">
+            <option value="0">单色光+RGB</option>
+            <option value="1">可调色温+UV灯</option>
+        </select>
+    </div>
+    <br />
+    <div class="item">
+        <p><label for="coolTemp">主动散热温度°C:</label></p>
+        <p>&nbsp;&nbsp;</p>
+        <input type="text" id="coolTemp" maxlength="2" width="50" value="" title="达到该温度后，开启风扇扇热">
+    </div>
+    <br />
+    <div class="item">
+        <p><label for="timeUpdataInterval">时间更新间隔(s):</label></p>
+        <p>&nbsp;&nbsp;</p>
+        <select id="timeUpdataInterval" name="timeUpdataInterval" value="300000">
+            <option value="300000">5分钟</option>
+            <option value="1800000">30分钟</option>
+            <option value="3600000">1小时</option>
+            <option value="43200000">12小时</option>
+        </select>
+    </div>
+    <br />
+    <div class="item">
+        <label for="Canvas">自定义RGB</label>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <canvas id="colorRgb" value="0" width="20" height="20"></canvas>
+        <br />
+        <canvas id="rgbCanvas" width="300" height="150"></canvas>
+        <br />
+    </div>
+    <br />
+    <div class="item">
+        <div class="container">
+            <div class="colorTemp" id="colorTemp"></div>
+            <input type="range" min="2500" max="7500" value="5000" class="slider" id="kelvinSlider">
+            <br />
+            <p>自定义色温: <span id="kelvinLabel">5000</span>K</p>
+        </div>
+    </div>
+    <br />
+    <div class="item">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <button id="save_config" type="button" onclick="readConfig()">重新读取</button>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <button id="save_config" type="button" onclick="saveConfig()">保存配置</button>
+    </div>
 
     <script>
         const canvas = document.getElementById('rgbCanvas');
         const ctx = canvas.getContext('2d');
-        const rgbCanvasChoose = document.getElementById('rgbCanvasChoose');
+        const colorRgb = document.getElementById('colorRgb');
 
         // 生成调色盘
         for (let x = 0; x < canvas.width; x++) {
@@ -153,14 +174,17 @@
             const pixel = ctx.getImageData(x, y, 1, 1).data;
             const color = `rgba(${pixel[0]}, ${pixel[1]}, ${pixel[2]}, ${pixel[3]})`;
             // document.body.style.backgroundColor = color;
-            rgbCanvasChoose.style.backgroundColor = color;
+            colorRgb.style.backgroundColor = color;
+            // colorRgb.value = pixel[0]<<16 + pixel[1]<<8 + pixel[2];
+            colorRgb.value = pixel[0] * 65536 + pixel[1] * 256 + pixel[2];
+            saveConfig();
         });
     </script>
 
     <script>
         const colorTemp = document.getElementById('colorTemp');
-        const kelvinSlider = document.getElementById('kelvinSlider');
-        const kelvinValue = document.getElementById('kelvinValue');
+        const kelvinSliderObj = document.getElementById('kelvinSlider');
+        const kelvinLabelObj = document.getElementById('kelvinLabel');
 
         // const rgb = 
 
@@ -201,8 +225,8 @@
 
         // 更新灯光颜色
         function updateLight() {
-            const kelvin = kelvinSlider.value;
-            kelvinValue.textContent = kelvin;
+            const kelvin = kelvinSliderObj.value;
+            kelvinLabelObj.textContent = kelvin;
             const rgb = kelvinToRGB(kelvin);
             const color = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
             colorTemp.style.backgroundColor = color;
@@ -216,7 +240,7 @@
         // }, 500); // 500毫秒
 
         // 监听滑块变化
-        kelvinSlider.addEventListener('input', updateLight);
+        kelvinSliderObj.addEventListener('input', updateLight);
         updateLight(); // 初始化
     </script>
 </body>
@@ -252,9 +276,11 @@
         var password_1 = document.getElementById("password_1").value;
         var ssid_2 = document.getElementById("ssid_2").value;
         var password_2 = document.getElementById("password_2").value;
+        var snailID = document.getElementById("snailID").value;
         // var apiKey = document.getElementById("apiKey").value;
         var ledPanelType = document.getElementById("ledPanelType").value;
         var coolTemp = document.getElementById("coolTemp").value;
+        var colorRgb = document.getElementById("colorRgb").value;
         var colorTemperature = document.getElementById("kelvinSlider").value;
         var timeUpdataInterval = document.getElementById("timeUpdataInterval").value;
         var config = {
@@ -263,9 +289,11 @@
             "password_1": password_1,
             "ssid_2": ssid_2,
             "password_2": password_2,
+            "snailID": snailID,
             // "apiKey": apiKey,
             "ledPanelType": ledPanelType,
             "coolTemp": coolTemp,
+            "colorRgb": colorRgb,
             "colorTemperature": colorTemperature,
             "timeUpdataInterval": timeUpdataInterval
         };
@@ -292,6 +320,9 @@
             if (jsonData.hasOwnProperty('password_2')) {
                 document.getElementById("password_2").value = jsonData.password_2;
             }
+            if (jsonData.hasOwnProperty('snailID')) {
+                document.getElementById("snailID").value = jsonData.snailID;
+            }
             // if (jsonData.hasOwnProperty('apiKey')) {
             //     document.getElementById("apiKey").value = jsonData.apiKey;
             // }
@@ -301,6 +332,9 @@
             if (jsonData.hasOwnProperty('coolTemp')) {
                 document.getElementById("coolTemp").value = jsonData.coolTemp;
             }
+            if (jsonData.hasOwnProperty('colorRgb')) {
+                document.getElementById("colorRgb").value = jsonData.colorRgb;
+            }
             if (jsonData.hasOwnProperty('colorTemperature')) {
                 document.getElementById("kelvinSlider").value = jsonData.colorTemperature;
                 document.getElementById('kelvinSlider').min = jsonData.colorTempLow;
@@ -309,6 +343,7 @@
             if (jsonData.hasOwnProperty('timeUpdataInterval')) {
                 document.getElementById("timeUpdataInterval").value = jsonData.timeUpdataInterval;
             }
+
 
         } catch (e) {
             console.error("Error parsing JSON:", e);

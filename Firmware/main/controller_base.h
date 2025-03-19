@@ -133,7 +133,7 @@ enum CTRL_OBJ_INDEX : unsigned char
 #define ADJ_POWER_CTRL_NAME "AdjPower"
 #define UARTINFO_CTRL_NAME "UartInfo"
 #define NETWORKER_CTRL_NAME "Networker"
-#define LED_CTRL_NAME "LedController"
+#define LED_CTRL_NAME DEVICE_NAME
 
 // const char *g_allCtrlName[CTRL_OBJ_INDEX_MAX] = {};
 
