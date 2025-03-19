@@ -405,7 +405,10 @@
                 if (jsonData.ssid_2) document.getElementById("ssid_2").value = jsonData.ssid_2;
                 if (jsonData.password_2) document.getElementById("password_2").value = jsonData.password_2;
                 if (jsonData.snailID) document.getElementById("snailID").value = jsonData.snailID;
-                if (jsonData.ledPanelType) document.getElementById("ledPanelType").value = jsonData.ledPanelType;
+                if (jsonData.ledPanelType) {
+                    document.getElementById("ledPanelType").value = jsonData.ledPanelType;
+                    updatePanelVisibility();
+                }
                 if (jsonData.coolTemp) document.getElementById("coolTemp").value = jsonData.coolTemp;
                 if (jsonData.colorTemperature) document.getElementById("kelvinSlider").value = jsonData.colorTemperature;
                 if (jsonData.timeUpdataInterval) document.getElementById("timeUpdataInterval").value = jsonData.timeUpdataInterval;

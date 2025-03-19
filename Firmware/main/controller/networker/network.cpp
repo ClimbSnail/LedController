@@ -31,9 +31,6 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-// #include "mdns.h"
-// #include "lwip/netif.h"
-
 // #define DEFAULT_SCAN_LIST_SIZE CONFIG_EXAMPLE_SCAN_LIST_SIZE
 #define DEFAULT_SCAN_LIST_SIZE CONFIG_WIFI_PROV_SCAN_MAX_ENTRIES
 
