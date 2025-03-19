@@ -163,7 +163,16 @@
 
 <body>
     <div class="container">
-        <h1>Led配置中心<sup class="version">v1.3.4</sup></h1>
+        <h1>Led配置中心<sup class="version">v1.3.5</sup></h1>
+        <p style="color: #ff4444; font-style: italic; margin: 0;">
+            部分浏览器可能不兼容，导致无法读取配置
+        </p>
+
+        <!-- 获取最新版本号按钮 -->
+        <!-- 由于AP模式下，PC端也无法联网，故这里用不了 -->
+        <!-- <div class="buttons" style="margin-bottom: 20px;">
+            <button id="check_version" type="button" onclick="checkLatestVersion()">查询最新版本号</button>
+        </div> -->
 
         <!-- WiFi 信息模块 -->
         <fieldset>
@@ -422,6 +431,32 @@
             } catch (e) {
                 console.error("Error parsing JSON:", e);
             }
+        }
+    </script>
+
+    <script type="text/javascript">
+        // 获取最新版本号的函数
+        function checkLatestVersion() {
+            const url = `http://climbsnail.cn:5001/ledc/sn/v1/version/firmware`;
+
+            // 发起 GET 请求
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("网络响应异常");
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log("最新版本号信息:", data);
+                    alert(`最新版本号: ${data}`); // 假设返回的数据中有 version 字段
+                })
+                .catch(error => {
+                    console.error("获取最新版本号失败:", error);
+                    alert("获取最新版本号失败，请检查网络或稍后重试。");
+                });
+
+
         }
     </script>
 </body>
