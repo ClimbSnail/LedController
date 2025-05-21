@@ -2,6 +2,7 @@
 #define FLASH_FS_H
 
 #include <stdint.h>
+#include <cstddef>
 
 #define ROOT_DIR "/spiffs"
 
@@ -28,11 +29,16 @@ public:
 
     void deleteFile(const char *path);
 
+    void deleteFileByPrefix(const char *pathPrefix);
+
     // // 写入到多级递归文件路径中
     // void writeFile2(const char *path, const char *message);
 
     // //删除多级递归文件
     // void deleteFile2(const char *path);
+
+    size_t total = 0;
+    size_t used = 0;
 };
 
 bool analyseParam(char *info, int argc, char **argv);

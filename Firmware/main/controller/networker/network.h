@@ -17,6 +17,7 @@
 #define SH_AP_SSID DEVICE_NAME
 #define SH_PASSWD_SSID ""
 #define WIFI_RSSI_MIN_DISCONNECT -127
+#define WIFI_RSSI_MIN_RECONNECT -126
 
 #include "esp_wifi_types.h"
 

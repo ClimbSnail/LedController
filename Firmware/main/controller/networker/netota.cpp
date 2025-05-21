@@ -211,7 +211,7 @@ bool get_updata_info(OtaData *otaData)
     // static DynamicJsonDocument sentData(256);
     sentData["userId"] = otaData->userId;
     sentData["action"] = "update";
-    sentData["data"]["hwVer"] = LEDC_HW_VERSION;
+    sentData["data"]["hwVer"] = CTRL_HW_VERSION;
     sentData["data"]["nowVer"] = otaData->nowVer;
     size_t length = serializeJson(sentData, payloadJson + strlen(OTA_URL_PATH), sizeof(payloadJson));
 

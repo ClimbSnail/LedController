@@ -3,6 +3,7 @@
 #include "common.h"
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
 #include "esp_err.h"
@@ -23,6 +24,8 @@ char dataCache[1536];
 
 FlashFS::FlashFS()
 {
+    total = 0;
+    used = 0;
 }
 
 bool FlashFS::init(void)
@@ -70,7 +73,6 @@ bool FlashFS::init(void)
     }
 #endif
 
-    size_t total = 0, used = 0;
     ret = esp_spiffs_info(conf.partition_label, &total, &used);
     if (ret != ESP_OK)
     {
@@ -116,7 +118,7 @@ uint16_t FlashFS::readFile(const char *path, uint8_t *info)
     uint16_t ret_len = 0;
     if (file == NULL)
     {
-        SH_LOG("Failed to open file for reading: %s", path);
+        SH_LOGE("Failed to open file for reading: %s", path);
         return ret_len;
     }
 
@@ -136,7 +138,7 @@ void FlashFS::writeFile(const char *path, const char *message)
     FILE *file = fopen(path, FILE_WRITE);
     if (!file)
     {
-        SH_LOG("- failed to open file for writing\n");
+        SH_LOGE("- failed to open file for writing\n");
         return;
     }
 
@@ -146,7 +148,7 @@ void FlashFS::writeFile(const char *path, const char *message)
     }
     else
     {
-        SH_LOG("- write failed\n");
+        SH_LOGE("- write failed\n");
     }
 
     fclose(file);
@@ -156,29 +158,65 @@ void FlashFS::renameFile(const char *src, const char *dst)
 {
     // 未改成全路径
     SH_LOG("Renaming file %s to %s\r\n", src, dst);
-    
+
     if (0 == rename(src, dst))
     {
         SH_LOG("- file renamed");
     }
     else
     {
-        SH_LOG("- rename failed");
+        SH_LOGE("- rename failed");
     }
 }
 
 void FlashFS::deleteFile(const char *path)
 {
-    SH_LOG("Deleting file: %s\r\n", path);
-
     if (0 == remove(path))
     {
-        SH_LOG("- deleted succ",);
+        SH_LOG("- deleted %s succ\r\n ", path);
     }
     else
     {
-        SH_LOG("- delete failed");
+        SH_LOGE("- deleted %s failed\r\n", path);
     }
+}
+
+void FlashFS::deleteFileByPrefix(const char *pathPrefix)
+{
+    // 实现前缀删除
+    SH_LOG("Deleting file by prefix: %s\r\n", pathPrefix);
+
+    DIR *dir = opendir(ROOT_DIR);
+    if (dir == NULL)
+        return;
+
+    char full_path[48];
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        snprintf(full_path, sizeof(full_path) - 1, "%s/%s", ROOT_DIR, entry->d_name);
+        if (entry->d_type != DT_DIR)
+        {
+            // SH_LOG("文件: %s", full_path);
+            if (strncmp(full_path, pathPrefix, strlen(pathPrefix)) == 0)
+            {
+                // 相等 匹配成功
+                if (0 == remove(full_path))
+                {
+                    SH_LOG("- deleted %s succ\r\n", full_path);
+                }
+                else
+                {
+                    SH_LOGE("- deleted %s failed\r\n", full_path);
+                }
+            }
+        }
+        else
+        {
+            SH_LOG("目录: /%s", full_path);
+        }
+    }
+    closedir(dir);
 }
 
 bool analyseParam(char *info, int argc, char **argv)

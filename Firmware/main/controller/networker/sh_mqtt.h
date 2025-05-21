@@ -12,7 +12,7 @@ enum MQTT_MSG_TYPE : unsigned char
 // mqtt消息队列
 extern QueueHandle_t mqttMsgQue;
 
-void mqttStart(const char *device_id,      // LED控制器的机器码
+void mqttStart(const char *device_id,      // 控制器的机器码
                const char *snail_device_id // 要联动的焊台机器码
 );
 void mqttPushTopic(const char *topic, const char *payload);

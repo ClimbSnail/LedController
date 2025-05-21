@@ -69,7 +69,7 @@ bool Networker::Start()
     return true;
 }
 
-bool Networker::SetLedCfgPoint(LedUtilConfig *ledUtilCfg)
+bool Networker::SetCtrlCfgPoint(LedUtilConfig *ledUtilCfg)
 {
     ledUtilConfig = ledUtilCfg;
     return true;
@@ -95,7 +95,8 @@ bool Networker::Process()
     else if (SH_WIFI_MODE_CLOSE != m_utilConfigCache.wifiMode)
     {
         m_runState &= (~RUN_STATE_WEB_SERVER_BIT_MASK); // 提前清零标志位
-        if (!(m_runState & RUN_STATE_WIFI_BIT_MASK))
+        if (!(m_runState & RUN_STATE_WIFI_BIT_MASK) ||
+            WIFI_RSSI_MIN_DISCONNECT == m_wifiRssi)
         {
             // m_utilConfigCache.ssid_1 = "HQ";
             // snprintf(m_utilConfigCache.password_1, sizeof(m_utilConfigCache.password_1), "%s", "A773181861a");
@@ -144,14 +145,14 @@ bool Networker::Process()
     }
 
     m_wifiRssi = sh_get_connect_rssi();
-    if (!(m_runState & RUN_STATE_WIFI_BIT_MASK))
-    {
-        m_wifiRssi = WIFI_RSSI_MIN_DISCONNECT;
-    }
+    // if (!(m_runState & RUN_STATE_WIFI_BIT_MASK))
+    // {
+    //     m_wifiRssi = WIFI_RSSI_MIN_DISCONNECT;
+    // }
 
     m_utilConfigCache.mqttEnable = ENABLE_STATE_OPEN;
     // MQTT处理
-    if ((m_runState & RUN_STATE_WIFI_BIT_MASK) &&
+    if (WIFI_RSSI_MIN_DISCONNECT != m_wifiRssi &&
         (!(m_runState & RUN_STATE_MQTT_BIT_MASK)) &&
         ENABLE_STATE_OPEN == m_utilConfigCache.mqttEnable)
     {

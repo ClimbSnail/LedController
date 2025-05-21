@@ -32,7 +32,6 @@ bool LedController::Start()
 {
     // 读取配置文件
     this->ReadConfig(&m_utilConfig);
-    m_utilConfig.colorRgb = 100;
     m_utilConfigCache = m_utilConfig;
 
     SH_HAL::gpioInit(m_pwmPin_0, SH_HAL::SH_GPIO_MODE_OUTPUT, SH_HAL::SH_GPIO_PULL_DOWN_ONLY);
@@ -486,7 +485,9 @@ bool LedController::UpdateConfig(void)
         m_utilConfig.cctBrightness != m_utilConfigCache.cctBrightness ||
         m_utilConfig.colorTemperature != m_utilConfigCache.colorTemperature ||
         m_utilConfig.uvBrightness != m_utilConfigCache.uvBrightness ||
+        m_utilConfig.singleBrightness != m_utilConfigCache.singleBrightness ||
         m_utilConfig.rgbBrightness != m_utilConfigCache.rgbBrightness ||
+        m_utilConfig.colorRgb != m_utilConfigCache.colorRgb ||
         m_utilConfig.rgbRed != m_utilConfigCache.rgbRed ||
         m_utilConfig.rgbGreen != m_utilConfigCache.rgbGreen ||
         m_utilConfig.rgbBlue != m_utilConfigCache.rgbBlue ||

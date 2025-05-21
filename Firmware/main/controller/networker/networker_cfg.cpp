@@ -31,40 +31,40 @@ void Networker::WriteConfig(NetworkerConfig *cfg)
     w_data += tmp;
 
     memset(tmp, 0, sizeof(cfg->ssid_0));
-    snprintf(tmp, sizeof(cfg->ssid_0), "%s\n", cfg->ssid_0);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->ssid_0), "%s", cfg->ssid_0);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->password_0));
-    snprintf(tmp, sizeof(cfg->password_0), "%s\n", cfg->password_0);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->password_0), "%s", cfg->password_0);
+    w_data = w_data + tmp + "\n";
 
     w_data = w_data + cfg->ssid_1 + "\n";
 
     memset(tmp, 0, sizeof(cfg->password_1));
-    snprintf(tmp, sizeof(cfg->password_1), "%s\n", cfg->password_1);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->password_1), "%s", cfg->password_1);
+    w_data = w_data + tmp + "\n";
 
     w_data = w_data + cfg->ssid_2 + "\n";
 
     memset(tmp, 0, sizeof(cfg->password_2));
-    snprintf(tmp, sizeof(cfg->password_2), "%s\n", cfg->password_2);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->password_2), "%s", cfg->password_2);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->cityCode));
-    snprintf(tmp, sizeof(cfg->cityCode), "%s\n", cfg->cityCode);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->cityCode), "%s", cfg->cityCode);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->apiKey));
-    snprintf(tmp, sizeof(cfg->apiKey), "%s\n", cfg->apiKey);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->apiKey), "%s", cfg->apiKey);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->ignoredVer));
-    snprintf(tmp, sizeof(cfg->ignoredVer), "%s\n", cfg->ignoredVer);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->ignoredVer), "%s", cfg->ignoredVer);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->snailID));
-    snprintf(tmp, sizeof(cfg->snailID), "%s\n", cfg->snailID);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->snailID), "%s", cfg->snailID);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, 16);
     snprintf(tmp, 16, "%lu\n", cfg->weatherUpdataInterval);
@@ -166,20 +166,20 @@ void Networker::WriteConfig(WeatherData *cfg)
     w_data += tmp;
 
     memset(tmp, 0, sizeof(cfg->cityname));
-    snprintf(tmp, sizeof(cfg->cityname), "%s\n", cfg->cityname);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->cityname), "%s", cfg->cityname);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->windDir));
-    snprintf(tmp, sizeof(cfg->windDir), "%s\n", cfg->windDir);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->windDir), "%s", cfg->windDir);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->windpower));
-    snprintf(tmp, sizeof(cfg->windpower), "%s\n", cfg->windpower);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->windpower), "%s", cfg->windpower);
+    w_data = w_data + tmp + "\n";
 
     memset(tmp, 0, sizeof(cfg->weather));
-    snprintf(tmp, sizeof(cfg->weather), "%s\n", cfg->weather);
-    w_data += tmp;
+    snprintf(tmp, sizeof(cfg->weather), "%s", cfg->weather);
+    w_data = w_data + tmp + "\n";
 
     g_flashCfg.writeFile(NETWORKER_WEATHER_CONFIG_PATH, w_data.c_str());
 }

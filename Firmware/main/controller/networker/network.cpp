@@ -40,7 +40,6 @@ static esp_netif_t *esp_netif_ap = NULL;
 static esp_netif_t *esp_netif_sta = NULL;
 static int8_t s_connectRssi = WIFI_RSSI_MIN_DISCONNECT; // 已连接的wifi网络信号强度
 wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
-bool s_firstConnSuccFlag = false; // 第一次连接受否成功
 
 char *get_ip_str(void)
 {
@@ -175,7 +174,7 @@ static int s_retry_num = 0;
 static uint16_t ap_timeout = 0; // ap无连接的超时时间
 
 /* FreeRTOS event group to signal when we are connected*/
-static EventGroupHandle_t s_wifi_event_group;
+static EventGroupHandle_t s_wifi_event_group = NULL;
 
 /* The event group allows multiple bits for each event, but we only care about two events:
  * - we are connected to the AP with an IP
@@ -210,24 +209,31 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
     {
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-        SH_LOG("Got IP:" IPSTR, IP2STR(&event->ip_info.ip));
         snprintf(ip_str, sizeof(ip_str), IPSTR, IP2STR(&event->ip_info.ip));
+        SH_LOG("Got IP: %s", ip_str);
         s_retry_num = 0;
+
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+
+        // 获取信号强度
+        wifi_ap_record_t ap_info;
+        esp_wifi_sta_get_ap_info(&ap_info);
+        s_connectRssi = ap_info.rssi;
+        SH_LOG("Signal strength: %d dBm\n", s_connectRssi);
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
-        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY || true == s_firstConnSuccFlag)
+        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY)
         {
+            s_connectRssi = WIFI_RSSI_MIN_RECONNECT; // 已断开的wifi网络信号强度（正在重连）
             esp_wifi_connect();
             s_retry_num++;
             // SH_LOG("retry to connect to the AP");
         }
         else
         {
+            s_connectRssi = WIFI_RSSI_MIN_DISCONNECT; // 已断开的wifi网络信号强度
             s_retry_num = EXAMPLE_ESP_MAXIMUM_RETRY;
-            s_connectRssi = WIFI_RSSI_MIN_DISCONNECT; // 已连接的wifi网络信号强度
-            // SH_LOG("connect to the AP fail");
             xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
         }
     }
@@ -235,6 +241,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
 
 int8_t sh_get_connect_rssi(void)
 {
+    // WIFI_RSSI_MIN_DISCONNECT 为未连接
     return s_connectRssi;
 }
 
@@ -300,7 +307,8 @@ bool sh_wifi_init_softap(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 
     SH_LOG("sh_wifi_init_softap finished.\nSSID:%s password:%s channel:%d\n",
-           wifi_config.ap.ssid, wifi_config.ap.password, wifi_config.ap.channel);
+           (char *)wifi_config.ap.ssid, (char *)wifi_config.ap.password,
+           wifi_config.ap.channel);
 
     return true;
 }
@@ -337,7 +345,8 @@ bool sh_wifi_init_sta(wifi_mode_t mode,
     SH_LOG("Max AP number ap_info can hold = %u", number);
     ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
     ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
-    SH_LOG("Total APs scanned = %u, actual AP number ap_info holds = %u", ap_count, number);
+
+    // SH_LOG("Total APs scanned = %u, actual AP number ap_info holds = %u", ap_count, number);
     // for (int i = 0; i < number; i++)
     // {
     //     SH_LOG("SSID \t\t%s", ap_info[i].ssid);
@@ -360,35 +369,47 @@ bool sh_wifi_init_sta(wifi_mode_t mode,
                 wait_rssi[wait_num] = ap_info[i].rssi;
                 ++wait_num;
                 // 列表里有可以连接的AP
-                SH_LOG("Connect to ap SSID:%s password:%s", ssid[ind], password[ind]);
+                SH_LOG("Connect to ap SSID:%s password:%s",
+                       ssid[ind], password[ind]);
             }
         }
     }
 
     /* Register Event handler */
-    esp_event_handler_instance_t instance_wifi_event;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_wifi_event));
-    esp_event_handler_instance_t instance_ip_event;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-                                                        IP_EVENT_STA_GOT_IP,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_ip_event));
+    static esp_event_handler_instance_t instance_wifi_event = NULL;
+    static esp_event_handler_instance_t instance_ip_event = NULL;
+
+    if(NULL == instance_wifi_event)
+    {
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                            ESP_EVENT_ANY_ID,
+                                                            &wifi_event_handler,
+                                                            NULL,
+                                                            &instance_wifi_event));
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                            IP_EVENT_STA_GOT_IP,
+                                                            &wifi_event_handler,
+                                                            NULL,
+                                                            &instance_ip_event));
+    }
+
+    if (NULL == s_wifi_event_group)
+    {
+        /* Initialize event group */
+        s_wifi_event_group = xEventGroupCreate();
+        // vEventGroupDelete(s_wifi_event_group);
+    }
 
     // 如果都没有搜到，就挨个搜索（因为有可能周围的wifi信号太多了，目标未在列表内）
-    // if (0 == wait_num)
-    // {
-    //     for (int pos = 0; pos < 3; ++pos)
-    //     {
-    //         wait_ssid[wait_num] = ssid[pos];
-    //         wait_password[wait_num] = password[pos];
-    //         ++wait_num;
-    //     }
-    // }
+    if (0 == wait_num)
+    {
+        for (int pos = 0; pos < 3; ++pos)
+        {
+            wait_ssid[wait_num] = ssid[pos];
+            wait_password[wait_num] = password[pos];
+            ++wait_num;
+        }
+    }
 
     for (int ind = 0; ind < wait_num; ++ind)
     {
@@ -400,8 +421,6 @@ bool sh_wifi_init_sta(wifi_mode_t mode,
         /* Start WiFi */
         ESP_ERROR_CHECK(esp_wifi_start());
 
-        /* Initialize event group */
-        s_wifi_event_group = xEventGroupCreate();
         xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT);
 
         /*
@@ -421,23 +440,22 @@ bool sh_wifi_init_sta(wifi_mode_t mode,
         {
             SH_LOG("Connected to ap SSID:%s password:%s",
                    wait_ssid[ind], wait_password[ind]);
-            s_connectRssi = wait_rssi[ind];
             connected = true;
-            s_firstConnSuccFlag = true;
+
+            // 获取信号强度
+            // s_connectRssi = wait_rssi[ind];
             break;
         }
         else if (bits & WIFI_FAIL_BIT)
         {
-            SH_LOG("Failed to connect to SSID:%s, password:%s",
-                   wait_ssid[ind], wait_password[ind]);
+            SH_LOGE("Failed to connect to SSID:%s, password:%s",
+                    wait_ssid[ind], wait_password[ind]);
         }
         else
         {
             SH_LOG("UNEXPECTED EVENT");
             // return false;
         }
-
-        vEventGroupDelete(s_wifi_event_group);
     }
 
     // ESP_ERROR_CHECK(esp_wifi_start());
@@ -453,7 +471,6 @@ bool sh_wifi_init_sta(wifi_mode_t mode,
 
     if (false == connected)
     {
-        SH_LOG("Failed to connect to any AP!!!");
         /* UnRegister Event handler */
         ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT,
                                                               ESP_EVENT_ANY_ID,
@@ -461,6 +478,8 @@ bool sh_wifi_init_sta(wifi_mode_t mode,
         ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT,
                                                               IP_EVENT_STA_GOT_IP,
                                                               instance_ip_event));
+        instance_wifi_event = NULL;
+        instance_ip_event = NULL;
         return false;
     }
 

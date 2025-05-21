@@ -31,22 +31,22 @@ mqtt 勾引选 Enable MQTT protocol 5.0
 Max HTTP Request Header Length 修改为 2048
 */
 
-#ifndef LEDC_SW_VERSION
-#define LEDC_SW_VERSION "1.3.2"
+#ifndef CTRL_SW_VERSION
+#define CTRL_SW_VERSION "1.3.2"
 #endif
 
 #ifdef TEST_VER // 测试标识
-#define LED_CONTROLLER_VERSION LEDC_SW_VERSION "_Test"
+#define LED_CONTROLLER_VERSION CTRL_SW_VERSION "_Test"
 #endif
 
 #ifdef FACTORY_TEST_VER // 测试标识
-#define LED_CONTROLLER_VERSION LEDC_SW_VERSION "_Factory"
+#define LED_CONTROLLER_VERSION CTRL_SW_VERSION "_Factory"
 #endif
 
 #define DEVICE_NAME "LedController"
 
 #ifndef LED_CONTROLLER_VERSION
-#define LED_CONTROLLER_VERSION LEDC_SW_VERSION
+#define LED_CONTROLLER_VERSION CTRL_SW_VERSION
 #endif
 
 #include "config_c3.h"

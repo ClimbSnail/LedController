@@ -68,7 +68,7 @@ extern "C" void app_main(void)
     ledCtrl->Start();
     networker->Start();
     // 设置web数据信息指针
-    networker->SetLedCfgPoint(&(ledCtrl->m_utilConfigCache));
+    networker->SetCtrlCfgPoint(&(ledCtrl->m_utilConfigCache));
     // 默认关闭web配置页面
     networker->m_utilConfigCache.webServerEnable = ENABLE_STATE_CLOSE;
 

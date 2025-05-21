@@ -141,7 +141,9 @@ struct OtaData
     char nowVer[12];                // 当前版本号
     char newVer[12];                // 新版本号
     char firmwareUrl[96];           // 升级文件地址
-    char firmwareMD5[128];          // 升级文件md5值
+    uint32_t firmwareSize;          // 固件大小 B
+    uint32_t firmwareReceiveSize;   // 接收完成的固件大小 B
+    char firmwareMD5[40];           // 升级文件md5值 128位16字节（通常使用32个十六进制数表示）
 };
 
 #endif // _NETWORKER_DATA_H

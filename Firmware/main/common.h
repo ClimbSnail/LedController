@@ -13,6 +13,7 @@ using namespace std;
 #define VERSION_NUM_TO_STR(n) _VERSION_NUM_TO_STR_(n)
 
 // #define SH_LOG(format, ...) UART_PORT.printf("[SnailManager]" format "\r\n", ##__VA_ARGS__)
+#define SH_LOGE(format, ...) ESP_LOGE("[SnailManager]", format, ##__VA_ARGS__)
 #define SH_LOG(format, ...) ESP_LOGW("", format, ##__VA_ARGS__)
 #define SH_LOG_DEBUG(format, ...) ESP_LOGW("", format, ##__VA_ARGS__)
 // #define SH_LOG(format, ...)

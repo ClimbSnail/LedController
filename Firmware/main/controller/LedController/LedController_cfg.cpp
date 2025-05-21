@@ -3,7 +3,7 @@
 #include "string.h"
 
 // 持久化配置
-#define LED_UTIL_CONFIG_PATH (ROOT_DIR "/led_util_v12_0.cfg")
+#define LED_UTIL_CONFIG_PATH (ROOT_DIR "/led_util_v136_0.cfg")
 
 void LedController::WriteConfig(LedUtilConfig *cfg)
 {
@@ -40,6 +40,10 @@ void LedController::WriteConfig(LedUtilConfig *cfg)
     w_data += tmp;
 
     memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%lu\n", cfg->colorRgb);
+    w_data += tmp;
+
+    memset(tmp, 0, 16);
     snprintf(tmp, 16, "%u\n", cfg->rgbRed);
     w_data += tmp;
 
@@ -55,7 +59,7 @@ void LedController::WriteConfig(LedUtilConfig *cfg)
     snprintf(tmp, 16, "%u\n", cfg->coolTemp);
     w_data += tmp;
 
-        g_flashCfg.writeFile(LED_UTIL_CONFIG_PATH, w_data.c_str());
+    g_flashCfg.writeFile(LED_UTIL_CONFIG_PATH, w_data.c_str());
 }
 
 void LedController::ReadConfig(LedUtilConfig *cfg)
@@ -79,6 +83,7 @@ void LedController::ReadConfig(LedUtilConfig *cfg)
         cfg->uvBrightness = 20;
         cfg->singleBrightness = 20;
         cfg->rgbBrightness = 20;
+        cfg->colorRgb = 16734288;
         cfg->rgbRed = 127;
         cfg->rgbGreen = 127;
         cfg->rgbBlue = 127;
@@ -90,8 +95,8 @@ void LedController::ReadConfig(LedUtilConfig *cfg)
     {
         int index = 0;
         // 解析数据
-        char *param[11] = {0};
-        analyseParam(info, 11, param);
+        char *param[12] = {0};
+        analyseParam(info, 12, param);
         cfg->ledPanelType = (LED_PANEL_TYPE)atoi(param[index++]);
         cfg->ledMode = (LED_MODE)atoi(param[index++]);
 
@@ -102,6 +107,7 @@ void LedController::ReadConfig(LedUtilConfig *cfg)
         cfg->singleBrightness = atoi(param[index++]);
 
         cfg->rgbBrightness = atoi(param[index++]);
+        cfg->colorRgb = atol(param[index++]);
         cfg->rgbRed = atoi(param[index++]);
         cfg->rgbGreen = atoi(param[index++]);
         cfg->rgbBlue = atoi(param[index++]);

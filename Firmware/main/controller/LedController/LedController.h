@@ -34,7 +34,7 @@ enum LED_OP_TYPE : unsigned char
     LED_OP_TYPE_MAX
 };
 
-// LED设置参数
+// 通用设置参数
 struct LedUtilConfig
 {
     LED_PANEL_TYPE ledPanelType; // LED灯板类型
@@ -57,7 +57,7 @@ struct LedUtilConfig
 };
 
 /**********************************
- * LED控制器
+ * 控制器
  */
 
 class LedController : public ControllerBase

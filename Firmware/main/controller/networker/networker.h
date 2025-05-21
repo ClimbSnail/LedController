@@ -47,7 +47,7 @@ public:
     void WriteConfig(WeatherData *cfg);
     void ReadConfig(WeatherData *cfg);
     bool UpdateConfig(void);
-    bool SetLedCfgPoint(LedUtilConfig *ledUtilCfg);
+    bool SetCtrlCfgPoint(LedUtilConfig *ledUtilCfg);
 };
 
 #endif
